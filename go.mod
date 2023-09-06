@@ -1,4 +1,4 @@
-module github.com/lucas-silveira/raycasting-poc
+module github.com/lucas-silveira/pixel-poc
 
 go 1.21.0
 
