@@ -2,9 +2,9 @@ package main
 
 import (
 	"github.com/faiface/pixel/pixelgl"
-	"github.com/lucas-silveira/pixel-poc/internal/anim"
+	"github.com/lucas-silveira/pixel-poc/internal/basic"
 )
 
 func main() {
-	pixelgl.Run(anim.Run)
+	pixelgl.Run(basic.Run)
 }
