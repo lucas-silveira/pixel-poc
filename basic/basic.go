@@ -25,7 +25,7 @@ func makePlayer(v pixel.Vec) *imdraw.IMDraw {
 
 func Run() {
 	cfg := pixelgl.WindowConfig{
-		Title:  "Pixel Rocks!",
+		Title:  "Basic graphs",
 		Bounds: pixel.R(0, 0, config.ScreenWidth, config.ScreenHeight),
 		VSync:  true,
 	}
