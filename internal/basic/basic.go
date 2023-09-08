@@ -2,7 +2,6 @@ package basic
 
 import (
 	"image/color"
-	"math"
 	"time"
 
 	"github.com/faiface/pixel"
@@ -43,20 +42,35 @@ func makePlayer(v pixel.Vec) *Player {
 	return &Player{v, imd}
 }
 
-func intersect(v pixel.Vec, l graph.Line) bool {
+func intersection(v pixel.Vec, l graph.Line) (float64, float64, bool) {
 	line := l.Props
+	// https://en.wikipedia.org/wiki/Line%E2%80%93line_intersection#Given_two_points_on_each_line
+	denom := (v.X-v.X+5)*(line.A.Y-line.B.Y) - (v.Y-v.Y+5)*(line.A.X-line.B.X)
+	tNum := (v.X-line.A.X)*(line.A.Y-line.B.Y) - (v.Y-line.A.Y)*(line.A.X-line.B.X)
+	uNum := (v.X-line.A.X)*(v.Y-v.Y+5) - (v.Y-line.A.Y)*(v.X-v.X+5)
 
-	m := (line.B.Y - line.A.Y) / (line.B.X - line.A.X) // Angular coefficient
-	isVertical := math.IsInf(m, 0)
-
-	if isVertical {
-		dt := math.Abs(v.X - line.A.X)
-		return dt <= 10
+	if denom == 0 {
+		return 0, 0, false
 	}
 
-	n := line.B.Y - m*line.B.X        // Linear coefficient
-	y := m*v.X + n                    // Reduced equation of the line: y = mx + n
-	return y >= v.Y-10 && y <= v.Y+10 // is collinear
+	t := tNum / denom
+	if t > 1 || t < 0 {
+		return 0, 0, false
+	}
+
+	u := uNum / denom
+	if u > 1 || u < 0 {
+		return 0, 0, false
+	}
+
+	x := v.X + t*(v.X+5-v.X)
+	y := v.Y + t*(v.Y+5-v.Y)
+	return x, y, true
+
+}
+func intersect(v pixel.Vec, l graph.Line) bool {
+	_, _, ok := intersection(v, l)
+	return ok
 }
 
 func Run() {
@@ -75,8 +89,8 @@ func Run() {
 
 	walls = append(
 		walls,
-		*graph.NewLine(pixel.V(500, 110), pixel.V(200, 150), config.WallColor),
-		*graph.NewLine(pixel.V(200, 400), pixel.V(100, 300), config.WallColor),
+		*graph.NewLine(pixel.V(200, 150), pixel.V(500, 110), config.WallColor),
+		*graph.NewLine(pixel.V(100, 300), pixel.V(200, 400), config.WallColor),
 		*graph.NewLine(pixel.V(550, 400), pixel.V(680, 300), config.WallColor),
 	)
 	walls = append(walls, graph.NewLineRect(
