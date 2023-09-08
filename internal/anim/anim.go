@@ -24,6 +24,8 @@ func Run() {
 		panic(err)
 	}
 
+	win.SetSmooth(true)
+
 	imd := imdraw.New(nil)
 	imd.Color = color.RGBA{255, 99, 71, 255}
 	imd.EndShape = imdraw.RoundEndShape

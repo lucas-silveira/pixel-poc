@@ -62,6 +62,8 @@ func Run() {
 		panic(err)
 	}
 
+	win.SetSmooth(true)
+
 	wave := newWave(pixel.RGB(1, 1, 1))
 
 	var (

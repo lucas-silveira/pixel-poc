@@ -2,7 +2,6 @@ package basic
 
 import (
 	"image/color"
-	"time"
 
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -35,6 +34,8 @@ func Run() {
 		panic(err)
 	}
 
+	win.SetSmooth(true)
+
 	outsideWalls := graph.NewLineRect(
 		config.Padding,
 		config.Padding,
@@ -52,13 +53,7 @@ func Run() {
 
 	line := graph.NewLineByAngle(win.Bounds().Center(), 100, 0, config.WallColor)
 
-	last := time.Now()
 	for !win.Closed() {
-		dt := time.Since(last).Seconds()
-		last = time.Now()
-
-		line.IncrementAngle(-1 * dt)
-
 		win.Clear(color.Black)
 
 		line.Draw(win)
