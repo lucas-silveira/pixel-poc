@@ -152,9 +152,9 @@ func rayCasting(center pixel.Vec, lines []graph.Line) []*graph.Line {
 			ray := graph.NewLine(center, p, 1, colornames.Salmon)
 			angle := ray.Angle()
 
-			for _, offset := range []float64{-0.005, 0.005} {
+			for _, offset := range []float64{-0.0005, 0.0005} {
 				points := []pixel.Vec{}
-				ray2 := graph.NewLineByAngle(center, rayLength, angle+offset, 1, colornames.White)
+				ray2 := graph.NewLineByAngle(center, rayLength, angle+offset, 0, colornames.White)
 
 				// Iterate over all lines to find the intersection points
 				for _, l2 := range lines {
@@ -168,7 +168,7 @@ func rayCasting(center pixel.Vec, lines []graph.Line) []*graph.Line {
 				min := math.Inf(1)
 				minIdx := -1
 				for i, p2 := range points {
-					d := (center.X - p2.X) + (center.Y - p2.Y) // distance between two points
+					d := math.Abs(center.X-p2.X) + math.Abs(center.Y-p2.Y) // distance between two points
 					if d < min {
 						min = d
 						minIdx = i
@@ -235,7 +235,7 @@ func Run() {
 			t := graph.NewTriangle(player.pos, r.Props.B, nextLine.Props.B, color)
 
 			t.Draw(win)
-			r.Draw(win) // Draw lines
+			// r.Draw(win) // Draw lines
 		}
 		player.Draw(win)
 
