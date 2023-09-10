@@ -15,6 +15,10 @@ type Line struct {
 	imdraw.IMDraw
 }
 
+func (l *Line) Points() []pixel.Vec {
+	return []pixel.Vec{l.Props.A, l.Props.B}
+}
+
 // Angle returns the angle of the line
 func (l *Line) Angle() float64 {
 	return math.Atan2(l.Props.B.Y-l.Props.A.Y, l.Props.B.X-l.Props.A.X)
@@ -45,7 +49,7 @@ func (l *Line) IncrementAngle(i float64) {
 }
 
 // NewLine creates a line and return it
-func NewLine(begin, end pixel.Vec, c color.Color) *Line {
+func NewLine(begin, end pixel.Vec, s float64, c color.Color) *Line {
 	l := &Line{
 		pixel.L(
 			begin,
@@ -56,13 +60,13 @@ func NewLine(begin, end pixel.Vec, c color.Color) *Line {
 	l.Color = c
 	l.EndShape = imdraw.RoundEndShape
 	l.Push(l.Props.A, l.Props.B)
-	l.Line(config.LStroke)
+	l.Line(s)
 
 	return l
 }
 
 // NewLineByAngle creates a line by an angle and return it
-func NewLineByAngle(begin pixel.Vec, length, angle float64, c color.Color) *Line {
+func NewLineByAngle(begin pixel.Vec, length, angle float64, s float64, c color.Color) *Line {
 	xDelta := length * math.Cos(angle) // Componente Ax = A*cos(θ)
 	yDelta := length * math.Sin(angle) // Componente Ay = A*sin(θ)
 	x2 := begin.X + xDelta
@@ -78,17 +82,30 @@ func NewLineByAngle(begin pixel.Vec, length, angle float64, c color.Color) *Line
 	l.Color = c
 	l.EndShape = imdraw.RoundEndShape
 	l.Push(l.Props.A, l.Props.B)
-	l.Line(config.LStroke)
+	l.Line(s)
 
 	return l
 }
 
 // NewLineRect creates a rect line and return it
-func NewLineRect(x, y, w, h float64, c color.Color) []Line {
+func NewLineRect(x, y, w, h float64, s float64, c color.Color) []Line {
 	return []Line{
-		*NewLine(pixel.V(x, y), pixel.V(x, y+h), c),
-		*NewLine(pixel.V(x, y+h), pixel.V(x+w, y+h), c),
-		*NewLine(pixel.V(x+w, y+h), pixel.V(x+w, y), c),
-		*NewLine(pixel.V(x+w, y), pixel.V(x, y), c),
+		*NewLine(pixel.V(x, y), pixel.V(x, y+h), s, c),
+		*NewLine(pixel.V(x, y+h), pixel.V(x+w, y+h), s, c),
+		*NewLine(pixel.V(x+w, y+h), pixel.V(x+w, y), s, c),
+		*NewLine(pixel.V(x+w, y), pixel.V(x, y), s, c),
 	}
+}
+
+func NewTriangle(v1, v2, v3 pixel.Vec, c color.Color) *imdraw.IMDraw {
+	imd := imdraw.New(nil)
+	imd.Color = c
+	imd.EndShape = imdraw.RoundEndShape
+
+	imd.Push(v1)
+	imd.Push(v2)
+	imd.Push(v3)
+	imd.Polygon(0)
+
+	return imd
 }
