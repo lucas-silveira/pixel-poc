@@ -1,7 +1,6 @@
 package anim
 
 import (
-	"fmt"
 	"image/color"
 	"math"
 	"time"
@@ -35,10 +34,6 @@ func Run() {
 		minWidth, maxWidth float64   = 100, config.ScreenWidth - 100
 		last               time.Time = time.Now()
 	)
-
-	for i := 0; i < 1000; i++ {
-		fmt.Println(math.Sin(float64(i)))
-	}
 
 	for !win.Closed() {
 		dt := time.Since(last).Seconds()

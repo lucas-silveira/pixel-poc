@@ -1,9 +1,7 @@
-package raycasting
+package basic2
 
 import (
 	"image/color"
-	"math"
-	"sort"
 	"time"
 
 	"github.com/faiface/pixel"
@@ -141,52 +139,6 @@ func intersect(v pixel.Vec, l2 graph.Line) bool {
 	return ok
 }
 
-// rayCasting returns a slice of line originating from point cx, cy and intersecting with objects
-func rayCasting(center pixel.Vec, lines []graph.Line) []*graph.Line {
-	const rayLength = 1000 // something large enough to reach all objects
-
-	var rays []*graph.Line
-	for _, l := range lines {
-		// Cast two rays per point
-		for _, p := range l.Points() {
-			ray := graph.NewLine(center, p, 1, colornames.Salmon)
-			angle := ray.Angle()
-
-			for _, offset := range []float64{-0.0005, 0.0005} {
-				points := []pixel.Vec{}
-				ray2 := graph.NewLineByAngle(center, rayLength, angle+offset, 0, colornames.White)
-
-				// Iterate over all lines to find the intersection points
-				for _, l2 := range lines {
-					if px, py, ok := intersection(*ray2, l2); ok {
-						// Append the intersection point
-						points = append(points, pixel.V(px, py))
-					}
-				}
-
-				// Find the point closest to start of ray
-				min := math.Inf(1)
-				minIdx := -1
-				for i, p2 := range points {
-					d := math.Abs(center.X-p2.X) + math.Abs(center.Y-p2.Y) // distance between two points
-					if d < min {
-						min = d
-						minIdx = i
-					}
-				}
-
-				// Append the ray as well as a ray with the end point with the closest intersections
-				rays = append(rays, ray, graph.NewLine(center, points[minIdx], 1, colornames.Blue))
-			}
-		}
-	}
-
-	sort.Slice(rays, func(i, j int) bool {
-		return rays[i].Angle() < rays[j].Angle()
-	})
-	return rays
-}
-
 func Run() {
 	cfg := pixelgl.WindowConfig{
 		Title:  "Basic graphs",
@@ -220,20 +172,11 @@ func Run() {
 		last = time.Now()
 
 		player.handleMovement(win, dt)
-		rays := rayCasting(player.pos, walls)
 
 		win.Clear(color.Black)
 
 		for _, l := range walls {
 			l.Draw(win)
-		}
-		for i, r := range rays {
-			nextLine := rays[(i+1)%len(rays)]                   // if the next index is out of range, get back to the first one.
-			color := pixel.RGB(1, 1, 1).Mul((pixel.Alpha(0.1))) // transparent color
-			t := graph.NewTriangle(player.pos, r.Props.B, nextLine.Props.B, color)
-
-			t.Draw(win)
-			// r.Draw(win) // Draw lines
 		}
 		player.Draw(win)
 
